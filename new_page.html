@@ -14,7 +14,7 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
@@ -22,31 +22,56 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             background-size: cover;
             background-position: center;
-            text-align: center;
         }
         .info {
+            text-align: center;
             margin-bottom: 20px;
         }
         .info h2 {
             margin-top: 0;
         }
-        .image-gallery {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
+        .image-input {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .image-gallery img {
-            max-width: 45%;
-            margin: 10px 0;
+        .image-input input[type="file"] {
+            display: none;
+        }
+        .image-input label {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
         }
         .next-btn {
-            display: inline-block;
-            margin-top: 20px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             background-color: #008CBA;
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
+        }
+        .corner-image {
+            position: fixed;
+            width: 350px; /* Điều chỉnh kích thước chiều rộng ở đây */
+            height: auto;
+        }
+        .bottom-left {
+            bottom: 100px;
+            left: 0;
+        }
+        .bottom-right {
+            bottom: 100px;
+            right: 0;
+        }
+        .middle {
+            bottom: 100px;
+            width: 590px;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
@@ -56,12 +81,10 @@
             <h2>Giới Thiệu Sản Phẩm:Thiết kế và thi công hệ thống quản lý kho bãi bằng công nghệ RFID, điều hướng tìm kiếm vị trí sản phẩm cần tìm trong kho.</h2>
             <p>Xin chào trang web này là đồ án tốt nghiệp của sinh viên đh spkt tạo ra để giúp việc quản lý hàng hoá trong kho, nhập xuất kho, tìm kiếm sản phẩm trong kho được tối ưu thời gian và dễ dàng sử dụng với mọi người giúp gia tăng lợi nhuận.</p>
         </div>
-        <div class="image-gallery">
-            <img src="images/image1.jpeg" alt="Image 1">
-            <img src="images/image2.jpeg" alt="Image 2">
-            <img src="images/image3.jpeg" alt="Image 3">
-        </div>
         <a href="new_page_two.html" class="next-btn">Tiếp</a>
     </div>
+    <img src="images/ba.jpeg" class="corner-image bottom-left" alt="Image 1">
+    <img src="images/bb.jpeg" class="corner-image bottom-right" alt="Image 2">
+    <img src="images/bc.jpeg" class="corner-image middle" alt="Image 3">
 </body>
 </html>
