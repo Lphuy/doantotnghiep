@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản Phẩm Trong Kho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+</head>
+<body>
+
+<h2>Sản Phẩm Trong Kho</h2>
+
+<table id="productTable">
+    <tr>
+        <th>Mã Sản Phẩm</th>
+        <th>Tên Sản Phẩm</th>
+        <th>Số Lượng Nhập Vào</th>
+        <th>Số Lượng Xuất Kho</th>
+        <th>Tình Trạng Hàng</th>
+    </tr>
+</table>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAWCiROMFO_Hy6Ngxb1q9E0Fg1kGTUHDEI",
+    authDomain: "phathuy-4e78b.firebaseapp.com",
+    databaseURL: "https://phathuy-4e78b-default-rtdb.firebaseio.com",
+    projectId: "phathuy-4e78b",
+    storageBucket: "phathuy-4e78b.appspot.com",
+    messagingSenderId: "293935102933",
+    appId: "1:293935102933:web:67e640a15104139f721b5c",
+    measurementId: "G-TM5LLXG3ZH"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  // Reference to your entire Firebase database
+  var database = firebase.database();
+
+  // Reference to the "tttt" node in your database
+  var productsRef = database.ref('tttt');
+
+  // Listen for changes to the "tttt" node in your database
+  productsRef.on('value', function(snapshot) {
+      var productTable = document.getElementById('productTable');
+      // Clear existing rows (except the header)
+      productTable.innerHTML = `
+          <tr>
+              <th>Mã Sản Phẩm</th>
+              <th>Tên Sản Phẩm</th>
+              <th>Số Lượng Nhập Vào</th>
+              <th>Số Lượng Xuất Kho</th>
+              <th>Tình Trạng Hàng</th>
+          </tr>
+      `;
+      // Get product data
+      var product = snapshot.val();
+      var row = document.createElement('tr');
+      row.innerHTML = `
+          <td>${product.Masanpham}</td>
+          <td>${product.Tensanpham}</td>
+          <td>${product.Soluongnhapvao}</td>
+          <td>${product.Soluongxuatkho}</td>
+          <td>${product.Tinhtranghang}</td>
+      `;
+      productTable.appendChild(row);
+  }, function (error) {
+    console.error("Error: " + error.code);
+  });
+</script>
+
+</body>
+</html>

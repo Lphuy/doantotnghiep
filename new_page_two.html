@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản Phẩm Trong Kho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .input-cell {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+</head>
+<body>
+
+<h2>Sản Phẩm Trong Kho</h2>
+
+<table id="productTable">
+    <tr>
+        <th>Mã Sản Phẩm</th>
+        <th>Tên Sản Phẩm</th>
+        <th>Số Lượng Nhập Vào</th>
+        <th>Số Lượng Xuất Kho</th>
+        <th>Tình Trạng Hàng</th>
+    </tr>
+</table>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAWCiROMFO_Hy6Ngxb1q9E0Fg1kGTUHDEI",
+    authDomain: "phathuy-4e78b.firebaseapp.com",
+    databaseURL: "https://phathuy-4e78b-default-rtdb.firebaseio.com",
+    projectId: "phathuy-4e78b",
+    storageBucket: "phathuy-4e78b.appspot.com",
+    messagingSenderId: "293935102933",
+    appId: "1:293935102933:web:67e640a15104139f721b5c",
+    measurementId: "G-TM5LLXG3ZH"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  // Reference to your entire Firebase database
+  var database = firebase.database();
+
+  // Function to save input text
+  function saveInputText(index) {
+    var inputText = document.getElementById('inputText' + index).value;
+    var inputTextRef = database.ref('tttt/Masanpham' + index + '/inputText');
+    inputTextRef.set(inputText);
+  }
+
+  // Function to display products
+  function displayProducts() {
+    var productTable = document.getElementById('productTable');
+    // Clear existing rows (except the header)
+    productTable.innerHTML = `
+      <tr>
+          <th>Mã Sản Phẩm</th>
+          <th>Tên Sản Phẩm</th>
+          <th>Số Lượng Nhập Vào</th>
+          <th>Số Lượng Xuất Kho</th>
+          <th>Tình Trạng Hàng</th>
+      </tr>
+    `;
+
+    for (var i = 1; i <= 5; i++) { // Loop through a predefined number of product nodes
+      (function(index) {
+        var productRef = database.ref('tttt/Masanpham' + index);
+        productRef.on('value', function(snapshot) {
+          var productData = snapshot.val();
+          if (productData) {
+            var scannedIDs = productData.scannedIDs ? Object.values(productData.scannedIDs).join(", ") : "";
+            var productName = productData.productName || "Sản phẩm RFID " + index;
+            var inputText = productData.inputText || ""; // Get the saved input text from Firebase
+            var soluongnhapvao = Object.keys(productData.scannedIDs || {}).length; // Số lượng nhập vào hiện tại
+            var maxSoluongnhapvao = productData.maxSoluongnhapvao || 0; // Số lượng nhập vào cao nhất từng đạt được
+            maxSoluongnhapvao = Math.max(maxSoluongnhapvao, soluongnhapvao); // Cập nhật giá trị cao nhất
+            productRef.update({ maxSoluongnhapvao: maxSoluongnhapvao }); // Lưu giá trị cao nhất vào Firebase
+            var soluongxuatkho = maxSoluongnhapvao - soluongnhapvao; // Số lượng xuất kho là giá trị nhập vào - số mã hiện tại
+            var iValue = maxSoluongnhapvao - soluongxuatkho;
+            var productStatus = maxSoluongnhapvao > soluongxuatkho ? `Còn Hàng (${iValue})` : "Hết hàng";
+
+            var row = document.getElementById('row' + index);
+            if (!row) {
+              row = document.createElement('tr');
+              row.id = 'row' + index;
+              productTable.appendChild(row);
+            }
+            row.innerHTML = `
+              <td id="scannedID${index}">${scannedIDs}</td>
+              <td>
+                ${productName}
+                <div class="input-cell">
+                  <input type="text" id="inputText${index}" value="${inputText}" placeholder="Nhập tên sản phẩm" style="margin-left: 5px;" onblur="saveInputText(${index})">
+                </div>
+              </td>
+              <td id="soluongnhapvao${index}">${maxSoluongnhapvao}</td>
+              <td id="soluongxuatkho${index}">${soluongxuatkho}</td>
+              <td id="productStatus${index}">${productStatus}</td>
+            `;
+
+            // Track changes to the scanned IDs
+            productRef.child('scannedIDs').on('child_removed', function(snapshot) {
+              var removedID = snapshot.val();
+              var currentScannedIDs = document.getElementById(`scannedID${index}`).textContent;
+              currentScannedIDs = currentScannedIDs.replace(new RegExp(`\\b${removedID}\\b,? ?`), '').trim();
+              document.getElementById(`scannedID${index}`).textContent = currentScannedIDs;
+              soluongnhapvao = currentScannedIDs.split(", ").filter(id => id).length;
+              soluongxuatkho = maxSoluongnhapvao - soluongnhapvao;
+              productRef.update({ soluongxuatkho: soluongxuatkho });
+              document.getElementById(`soluongxuatkho${index}`).textContent = soluongxuatkho;
+              iValue = maxSoluongnhapvao - soluongxuatkho;
+              document.getElementById(`productStatus${index}`).textContent = maxSoluongnhapvao > soluongxuatkho ? `Còn Hàng (${iValue})` : "Hết hàng";
+            });
+
+            // Listen for new scanned IDs
+            productRef.child('scannedIDs').on('child_added', function(snapshot) {
+              var newID = snapshot.val();
+              var currentScannedIDs = document.getElementById(`scannedID${index}`).textContent.split(", ").filter(id => id).map(id => id.trim());
+              if (!currentScannedIDs.includes(newID)) {
+                currentScannedIDs.push(newID);
+                document.getElementById(`scannedID${index}`).textContent = currentScannedIDs.join(", ");
+                soluongnhapvao = currentScannedIDs.length;
+                maxSoluongnhapvao = Math.max(maxSoluongnhapvao, soluongnhapvao);
+                productRef.update({ maxSoluongnhapvao: maxSoluongnhapvao });
+                document.getElementById(`soluongnhapvao${index}`).textContent = maxSoluongnhapvao;
+                soluongxuatkho = maxSoluongnhapvao - soluongnhapvao;
+                productRef.update({ soluongxuatkho: soluongxuatkho });
+                document.getElementById(`soluongxuatkho${index}`).textContent = soluongxuatkho;
+                iValue = maxSoluongnhapvao - soluongxuatkho;
+                document.getElementById(`productStatus${index}`).textContent = maxSoluongnhapvao > soluongxuatkho ? `Còn Hàng (${iValue})` : "Hết hàng";
+              }
+            });
+          } else {
+            // Remove row if productData is null (deleted)
+            var row = document.getElementById('row' + index);
+            if (row) {
+              row.remove();
+            }
+          }
+        });
+      })(i);
+    }
+  }
+
+  // Call the display function initially
+  displayProducts();
+
+</script>
+<a href="Untitled-1.html" class="next-btn">Đăng xuất</a>
+</body>
+</html>
