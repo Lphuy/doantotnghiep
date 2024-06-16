@@ -7,11 +7,18 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-image: url('images/bj.jpeg'); /* Đường dẫn tới hình nền */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff; /* Màu chữ để nổi bật trên nền tối */
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Nền trắng mờ cho bảng */
+            color: #000; /* Màu chữ của bảng */
         }
         table, th, td {
             border: 1px solid #ddd;
@@ -26,6 +33,15 @@
         .input-cell {
             display: flex;
             align-items: center;
+        }
+        .next-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
         }
     </style>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
